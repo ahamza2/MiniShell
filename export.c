@@ -6,196 +6,116 @@
 /*   By: emohamed <emohamed@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/07 19:47:24 by haarab            #+#    #+#             */
-/*   Updated: 2023/09/11 15:19:59 by emohamed         ###   ########.fr       */
+/*   Updated: 2023/09/30 22:32:10 by emohamed         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int check_equal(char *args)
+void	fell_envirement(t_vars *vars, int count, char *args, char *key)
 {
-	if (args[0] == '=' && args[1] == '\0')
+	t_export	export_int;
+	char		**tempers;
+
+	export_int.p = 0;
+	export_int.d = 0;
+	tempers = ft_split_export(args, '=');
+	key = dp_en(tempers[0]);
+	export_int.x = 0;
+	while (export_int.x < vars->env_number)
 	{
-		printf ("export: `%s' : not a valid identifier\n", args);
-		return (1);
+		if (vars->env[export_int.d].key)
+		{
+			if (ft_strcmp(vars->env[export_int.d].key, key) == 0)
+				export_int.p = 1;
+		}
+		export_int.d++;
+		export_int.x++;
 	}
-	return (0);
+	if (export_int.p != 1)
+	{
+		export_int.count = count;
+		fell_env (vars, args, key, &export_int);
+		vars->env_number++;
+	}
+	free_x_dmax(tempers);
 }
 
-char *skip_quots(char *str)
+int	count_env(t_vars *vars, t_env *tmp)
 {
-	int i = 0;
-	int j = 0;
-	if (!str)
-		return (NULL);
-	while(str[i])
-	{
-		if (str[i] == 34 || str[i] == 39)
-			j++;
-		i++;
-	}
-	char *ptr = malloc(sizeof(char *) * ft_strlen(str) - j + 1);
-	i = 0;
-	j = 0;
-	while(str[i])
-	{
-		if (str[i] != 34 && str[i] != 39)
-		{
-			ptr[j] = str[i];
-			j++;
-		}
-		i++;
-	}
-	ptr[j] = '\0';
-	free(str);
-	return (ptr);
-}
+	int	count;
 
-char *skip_quotsinquots(char *str)
-{
-	int i = 0;
-	int j = 0;
-	if (!str)
-		return (NULL);
-	char *ptr = NULL;
-	while (str[i])
-	{
-		if (str[i] != 34 && str[i] != 39)
-		{
-			j++;
-		}
-		i++;
-	}
-	ptr = malloc(sizeof(char) * ft_strlen(str) - j + 1);
-	// if (!ptr)
-	// 	return (NULL);
-	// // printf("%s == %d\n", str, k);
-	int k = ft_strlen(str);
-	i = 0;
-	j = 0;
-	while(i < k)
-	{
-		if (str[i] != 34 && str[i] != 39)
-		{
-			ptr[j] = str[i];
-			j++;
-		}
-		i++;
-	}
-	ptr[j] = '\0';
-	return (ptr);
-}
-
-int check_doubelcouts(char *args)
-{
-	int i;
-	
-	i = 0;
-	int count = 0;
-	while (args[i])
-	{
-		if (args[i] == 34)
-		{
-			count++;
-		}
-		i++;
-	}
-	return (count);
-}
-
-void export_cmd(t_vars *vars, char *args)
-{
-	char *key = NULL;
-	char *value;
-    int count = 0;
-	t_env *tmp = vars->env;
-	count = 0;
-	// char *str; 
-	if (args == NULL)
-	{
-		while (count < vars->env_number)
-		{
-			if (vars->env[count].is_equal)
-			{
-				printf("%s", vars->env[count].key );
-				printf("=");
-				if (vars->env[count].value && check_doubelcouts(vars->env[count].value) < 2)
-				{
-					// int sss = check_doubelcouts(vars->env[count].value);
-					// printf("%d", sss);
-					printf("\"%s\"""\n", vars->env[count].value);
-				}
-				if (vars->env[count].value && check_doubelcouts(vars->env[count].value) >= 2)
-				{
-					// int sss = check_doubelcouts(vars->env[count].value);
-					// printf("%d", sss);
-					printf("%s\n", vars->env[count].value);
-				}
-				if(!vars->env[count].value)
-					printf("");
-			}
-			if (!vars->env[count].is_equal)
-			{
-				printf("%s%s", vars->env[count].key, GRN);
-				if (vars->env[count].value)
-				{
-					printf("=");
-					printf("\"%s%s\"""", vars->env[count].value, RED);
-				}
-				printf("\n");
-			}
-			count++;
-		}
-		return ;
-	}
-	count = 0;
-	char *var_ = ft_split(args, '=')[0];
-	if (var_ == NULL)
-		return ;
-	while (count < vars->env_number)
-	{
-		if (!ft_strncmp(vars->env[count].key, var_, ft_strlen(var_)))
-		{
-			if (ft_strchr(args, '=') != NULL)
-			{
-				vars->env[count].value = ft_strchr(args, '=') + 1;
-				return;
-			}
-		}
-		count++;
-	}
-	vars->env = malloc((vars->env_number + 1) * sizeof(t_env));
 	count = 0;
 	while (count < vars->env_number)
 	{
 		vars->env[count] = tmp[count];
 		count++;
 	}
-	if (ft_isalpha(args[0]) == 1)
+	return (count);
+}
+
+int	export_env(t_vars *vars, char *var_, char *args)
+{
+	int	count;
+
+	count = 0;
+	if (var_ == NULL)
+		return (0);
+	if (check_key(var_) == 0)
 	{
-		key = ft_split(args, '=')[0];
-		vars->env[count].key = key;
-		value = ft_strchr(args, '=') + 1;
-		if (ft_strchr(args, '=') != NULL)
-		{
-			vars->env[count].is_equal = 1;
-			vars->env[count].value = value;
-		}
-		// else if (vars->env[count].key == key && value == NULL)
-		// {
-		// 	vars->env[count].is_equal = 1;
-		// 	vars->env[count].value = value;
-		// }
-		vars->env_number++;
+		printf("minishell: not a valid identifier\n");
+		g_exit_status = 1;
 	}
-	if (!ft_strchr(args, '='))
+	count = 0;
+	while (count < vars->env_number)
 	{
-		vars->env[count].key = args;
+		if (fell_env_value(vars, args, count, var_) == 0)
+			return (0);
+		count++;
 	}
-	if (ft_isalpha(args[0]) != 1)
+	return (1);
+}
+
+int	print_export(t_vars *vars, char *args, int count)
+{
+	if (args == NULL)
 	{
-		printf("export : `%s' : not a valid identifier\n", args);
+		print_env(vars, count);
+		return (0);
 	}
+	if (args[0] == '=')
+	{
+		printf ("minishell: export: `%s': not a valid identifier\n", args);
+		g_exit_status = 1;
+		return (0);
+	}
+	return (1);
+}
+
+void	export_cmd(t_vars *vars, char *args)
+{
+	char	*key;
+	int		count;
+	t_env	*tmp;
+	char	*var_;
+	char	**tempers;
+
+	count = 0;
+	if (print_export(vars, args, count) == 0)
+		return ;
+	key = NULL;
+	tmp = vars->env;
+	tempers = ft_split_export(args, '=');
+	var_ = tempers[0];
+	if (export_env(vars, var_, args) == 0)
+	{
+		free_x_dmax(tempers);
+		return ;
+	}
+	vars->env = malloc((vars->env_number + 1) * sizeof(t_env));
+	count = count_env(vars, tmp);
+	if (check_key(var_) == 1)
+		fell_envirement(vars, count, args, key);
+	free_x_dmax(tempers);
 	free(tmp);
-	
 }

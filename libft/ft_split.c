@@ -6,7 +6,7 @@
 /*   By: emohamed <emohamed@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/10 16:21:49 by emohamed          #+#    #+#             */
-/*   Updated: 2023/05/11 14:18:06 by emohamed         ###   ########.fr       */
+/*   Updated: 2023/09/30 02:47:20 by emohamed         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ char	*allocat_s(const char *s, char c)
 	len = 0;
 	while (s[len] && s[len] != c)
 		len++;
-	p = malloc(sizeof(char) * len + 1);
+	p = malloc_((sizeof(char) * (len + 1)), NULL, 0, NULL);
 	if (!p)
 		return (NULL);
 	while (i < len)
@@ -61,7 +61,7 @@ char	**ft_split(char const *s, char c)
 
 	i = 0;
 	j = 0;
-	p = malloc(sizeof(char *) * count_s_lenght(s, c) + 1);
+	p = malloc_((sizeof(char *) * count_s_lenght(s, c) + 1), NULL, 0, NULL);
 	if (!p)
 		return (NULL);
 	while (s[i])
@@ -79,11 +79,3 @@ char	**ft_split(char const *s, char c)
 	p[j] = NULL;
 	return (p);
 }
-
-// int main()
-// {
-// 	char *s = "    Hello           World !     ";
-
-// 	char **str = ft_split(s, ' ');
-// 	printf("%s\n", str[0]);
-// }

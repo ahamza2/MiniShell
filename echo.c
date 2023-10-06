@@ -6,22 +6,24 @@
 /*   By: emohamed <emohamed@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/07 19:49:04 by haarab            #+#    #+#             */
-/*   Updated: 2023/09/11 14:46:56 by emohamed         ###   ########.fr       */
+/*   Updated: 2023/09/30 21:38:18 by emohamed         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int check_n(char *args)
+int	check_n(char *args)
 {
-	int i = 1;
+	int	i;
+
+	i = 1;
 	if (args[0] == '-')
 	{
 		if (args[0] == '-' && args[1] == '\0')
 			return (1);
 		if (args[1] != '\0')
 		{
-			while (args[i] == 'n')
+			while (args[i] && args[i] == 'n')
 			{
 				i++;
 			}
@@ -32,34 +34,43 @@ int check_n(char *args)
 	return (1);
 }
 
-void run_echo (char **args, t_vars *vars)
+void	print_echo(char **args, int i)
 {
-    int i = 1;
-    int check = 0;
-    // int g = 1;
-	// if (args[1] == NULL)
-	// 	return;
-    while (args[i])
-    {
-		// printf ("string ==== %s\n", args[i]);
-        // if (args[i])
-            // g = ft_strncmp(args[i], "-n", ft_strlen("-n"));
-            // g = check_n(args[i]);
-        while (check_n(args[i]) == 0)
-        {
-            check = 1;
-            i++;
-        }
-		if (check_n(args[i]) == 1)
-			vars->exit_status = 0;
-        while (args[i])
+	int	j;
+
+	j = 0;
+	while (args[i][j])
+	{
+		printf("%c", args[i][j]);
+		j++;
+	}
+	if (args[i] != NULL && args[i + 1] != NULL)
+		printf(" ");
+}
+
+void	run_echo(char **args)
+{
+	int	i;
+	int	check;
+
+	check = 0;
+	i = 1;
+	while (args[i])
+	{
+		while (args[i] && check_n(args[i]) == 0)
 		{
-            printf("%s", args[i]);
-			if (args[i] != NULL && args[i + 1] != NULL)
-				printf(" ");
-        	i++;
+			check = 1;
+			i++;
 		}
-    }
-    if (check == 0)
-        printf("\n");
+		if (args[i] && check_n(args[i]) == 1)
+			g_exit_status = 0;
+		while (args[i])
+		{
+			print_echo(args, i);
+			i++;
+		}
+		g_exit_status = 0;
+	}
+	if (check == 0)
+		printf("\n");
 }

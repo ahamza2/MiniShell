@@ -6,13 +6,14 @@
 /*   By: emohamed <emohamed@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/10 10:39:39 by emohamed          #+#    #+#             */
-/*   Updated: 2023/05/16 15:36:32 by emohamed         ###   ########.fr       */
+/*   Updated: 2023/09/30 05:11:49 by emohamed         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
+#include <stdio.h>
 
-char	*ft_substr(char const *s, unsigned int start, size_t len)
+char	*ft_substr(char const *s, int start, int len)
 {
 	char	*stock;
 
